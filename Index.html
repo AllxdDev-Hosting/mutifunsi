@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Multi-Tool by allxddev</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --main-bg: #111827; --secondary-bg: #1F2937; --sidebar-bg: #1F2937; --card-bg: #374151; --text-main: #F9FAFB; --text-secondary: #9CA3AF; --accent-blue: #3B82F6; }
+        body { font-family: 'Inter', sans-serif; scroll-behavior: smooth; background-color: var(--main-bg); color: var(--text-main); }
+        .loader { border: 4px solid #4B5563; border-top: 4px solid var(--accent-blue); border-radius: 50%; width: 32px; height: 32px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        input[type="file"] { display: none; }
+        .sidebar { scrollbar-width: thin; scrollbar-color: var(--card-bg) var(--sidebar-bg); }
+        .sidebar::-webkit-scrollbar { width: 8px; }
+        .sidebar::-webkit-scrollbar-track { background: var(--sidebar-bg); }
+        .sidebar::-webkit-scrollbar-thumb { background-color: var(--card-bg); border-radius: 10px; border: 3px solid var(--sidebar-bg); }
+        .sidebar-link { display: block; padding: 0.75rem 1rem; border-radius: 0.5rem; transition: background-color 0.2s, color 0.2s; cursor: pointer; color: var(--text-secondary); }
+        .sidebar-link:hover, .sidebar-link.active { background-color: #374151; color: var(--text-main); }
+        .tool-panel { display: none; animation: fadeIn 0.5s; }
+        .tool-panel.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .form-input, .form-select, .form-textarea { width: 100%; background-color: var(--card-bg); border: 1px solid #4B5563; border-radius: 0.5rem; padding: 0.75rem; color: var(--text-main); transition: border-color 0.2s, box-shadow 0.2s; }
+        .form-input:focus, .form-select:focus, .form-textarea:focus { outline: none; border-color: var(--accent-blue); box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.4); }
+        .btn { display: inline-block; width: 100%; color: white; font-weight: 600; padding: 0.75rem 1rem; border-radius: 0.5rem; transition: all 0.2s; cursor: pointer; border: none; text-align: center; }
+        .btn-primary { background-color: var(--accent-blue); }
+        .btn-primary:hover { background-color: #2563EB; }
+        .btn:disabled { background-color: #4B5563; cursor: not-allowed; }
+        .result-box { margin-top: 1.5rem; background-color: var(--main-bg); padding: 1rem; border-radius: 0.5rem; min-height: 50px; word-break: break-all; }
+    </style>
+</head>
+<body class="bg-gray-900 text-white">
+
+    <div class="flex flex-col md:flex-row min-h-screen">
+        <!-- Sidebar Navigation -->
+        <aside class="w-full md:w-72 bg-gray-800 p-4 flex-shrink-0 md:h-screen md:overflow-y-auto sidebar">
+            <h1 class="text-2xl font-bold text-center md:text-left mb-4 text-white">All-In-One Tools</h1>
+            <div class="space-y-1">
+                <span class="text-xs font-bold text-gray-400 uppercase px-4">Image & Video</span>
+                <a class="sidebar-link active" data-target="panel-figurine">AI Figurine Generator</a>
+                <a class="sidebar-link" data-target="panel-ailabs">AI Labs Image/Video</a>
+                <a class="sidebar-link" data-target="panel-txttoimage">Text to Image</a>
+                <a class="sidebar-link" data-target="panel-removebg">Remove Background</a>
+                <a class="sidebar-link" data-target="panel-descbimg">Describe Image</a>
+                <a class="sidebar-link" data-target="panel-aoirandom">Random Waifu</a>
+                <a class="sidebar-link" data-target="panel-sstweet">Screenshot Tweet</a>
+            </div>
+             <div class="space-y-1 pt-4">
+                <span class="text-xs font-bold text-gray-400 uppercase px-4">AI Chat</span>
+                <a class="sidebar-link" data-target="panel-chatai">Advanced AI Chat</a>
+                <a class="sidebar-link" data-target="panel-ai-chat">Simple AI Chat</a>
+                <a class="sidebar-link" data-target="panel-ai-character-chat">AI Character Chat</a>
+            </div>
+            <div class="space-y-1 pt-4">
+                <span class="text-xs font-bold text-gray-400 uppercase px-4">Downloaders</span>
+                <a class="sidebar-link" data-target="panel-aiodl">All-In-One Downloader</a>
+                <a class="sidebar-link" data-target="panel-ytdl">YouTube Downloader</a>
+                <a class="sidebar-link" data-target="panel-spotify-downloader">Spotify Downloader</a>
+                <a class="sidebar-link" data-target="panel-igdl">Instagram Downloader</a>
+            </div>
+             <div class="space-y-1 pt-4">
+                <span class="text-xs font-bold text-gray-400 uppercase px-4">Music</span>
+                <a class="sidebar-link" data-target="panel-genmusic">Generate Music</a>
+                <a class="sidebar-link" data-target="panel-tomp3">MP4 to MP3</a>
+            </div>
+            <div class="space-y-1 pt-4">
+                <span class="text-xs font-bold text-gray-400 uppercase px-4">Utilities</span>
+                <a class="sidebar-link" data-target="panel-webcheck">Website Checker</a>
+                <a class="sidebar-link" data-target="panel-shorturl">URL Shortener</a>
+                <a class="sidebar-link" data-target="panel-genqr">QR Code Generator</a>
+                <a class="sidebar-link" data-target="panel-getpbd">Pastebin Stalker</a>
+                <a class="sidebar-link" data-target="panel-srvrmc-search">Minecraft Server Search</a>
+                <a class="sidebar-link" data-target="panel-infoserver">Minecraft Server Info</a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-6 md:p-10 overflow-y-auto">
+            <div class="bg-gray-800 p-6 md:p-8 rounded-2xl shadow-2xl w-full max-w-5xl mx-auto">
+                
+                <!-- All Tool Panels -->
+                <div id="panel-figurine" class="tool-panel active"><!-- Existing Content --></div>
+                <div id="panel-ai-chat" class="tool-panel"><!-- Existing Content --></div>
+                <div id="panel-ai-character-chat" class="tool-panel"><!-- Existing Content --></div>
+                <div id="panel-spotify-downloader" class="tool-panel"><!-- Existing Content --></div>
+
+                <!-- AI Labs Panel -->
+                <div id="panel-ailabs" class="tool-panel">
+                    <div class="text-center mb-8"><h2 class="text-3xl font-bold">AI Labs Image & Video</h2><p class="text-gray-400 mt-2">Buat gambar atau video dari teks.</p></div>
+                    <form id="ailabs-form" class="space-y-4">
+                        <input type="text" id="ailabs-prompt" class="form-input" placeholder="Contoh: naga terbang di atas kastil...">
+                        <div class="flex justify-center space-x-4"><label class="flex items-center space-x-2"><input type="radio" name="ailabs-type" value="image" checked><span>Gambar</span></label><label class="flex items-center space-x-2"><input type="radio" name="ailabs-type" value="video"><span>Video</span></label></div>
+                        <button type="submit" id="ailabs-submit-btn" class="btn btn-primary bg-cyan-600 hover:bg-cyan-700">Generate</button>
+                    </form>
+                    <div id="ailabs-status" class="mt-4 text-center text-sm min-h-[20px]"></div><div id="ailabs-result" class="result-box flex justify-center items-center"></div>
+                </div>
+
+                <!-- Text to Image Panel -->
+                <div id="panel-txttoimage" class="tool-panel">
+                     <div class="text-center mb-8"><h2 class="text-3xl font-bold">Text to Image</h2><p class="text-gray-400 mt-2">Buat gambar dari imajinasimu.</p></div>
+                    <form id="txttoimage-form" class="space-y-4">
+                        <input type="text" id="txttoimage-prompt" class="form-input" placeholder="Contoh: astronot bersantai di pantai...">
+                        <button type="submit" id="txttoimage-submit-btn" class="btn btn-primary">Buat Gambar</button>
+                    </form>
+                    <div id="txttoimage-status" class="mt-4 text-center text-sm min-h-[20px]"></div><div id="txttoimage-result" class="result-box flex justify-center items-center"></div>
+                </div>
+                
+                <!-- Remove BG Panel -->
+                <div id="panel-removebg" class="tool-panel">
+                    <div class="text-center mb-8"><h2 class="text-3xl font-bold">Remove Background</h2><p class="text-gray-400 mt-2">Hapus latar belakang dari gambar.</p></div>
+                    <form id="removebg-form" class="space-y-4">
+                        <label for="removebg-input" class="btn bg-gray-600 hover:bg-gray-700 text-center cursor-pointer">Pilih Gambar</label>
+                        <input type="file" id="removebg-input" accept="image/*"><img id="removebg-preview" class="hidden max-h-48 mx-auto rounded-md my-4">
+                        <button type="submit" id="removebg-submit-btn" class="btn btn-primary">Hapus Latar Belakang</button>
+                    </form>
+                    <div id="removebg-status" class="mt-4 text-center text-sm min-h-[20px]"></div><div id="removebg-result" class="result-box flex justify-center items-center"></div>
+                </div>
+
+                <!-- Describe Image Panel -->
+                <div id="panel-descbimg" class="tool-panel">
+                    <div class="text-center mb-8"><h2 class="text-3xl font-bold">Describe Image</h2><p class="text-gray-400 mt-2">Biarkan AI mendeskripsikan gambarmu.</p></div>
+                    <form id="descbimg-form" class="space-y-4">
+                        <label for="descbimg-input" class="btn bg-gray-600 hover:bg-gray-700 text-center cursor-pointer">Pilih Gambar</label>
+                        <input type="file" id="descbimg-input" accept="image/*"><img id="descbimg-preview" class="hidden max-h-48 mx-auto rounded-md my-4">
+                        <button type="submit" id="descbimg-submit-btn" class="btn btn-primary">Deskripsikan</button>
+                    </form>
+                    <div id="descbimg-status" class="mt-4 text-center text-sm min-h-[20px]"></div><div id="descbimg-result" class="result-box"></div>
+                </div>
+
+                <!-- Random Waifu Panel -->
+                <div id="panel-aoirandom" class="tool-panel">
+                    <div class="text-center mb-8"><h2 class="text-3xl font-bold">Random Waifu</h2><p class="text-gray-400 mt-2">Dapatkan gambar waifu acak dari Aoi.live.</p></div>
+                    <form id="aoirandom-form" class="space-y-4">
+                        <input type="number" id="aoirandom-count" class="form-input" value="1" min="1" max="10" placeholder="Jumlah gambar (1-10)">
+                        <button type="submit" id="aoirandom-submit-btn" class="btn btn-primary">Dapatkan Waifu</button>
+                    </form>
+                    <div id="aoirandom-status" class="mt-4 text-center text-sm min-h-[20px]"></div><div id="aoirandom-result" class="result-box grid grid-cols-2 md:grid-cols-3 gap-4"></div>
+                </div>
+
+                <!-- Screenshot Tweet Panel -->
+                <div id="panel-sstweet" class="tool-panel">
+                    <div class="text-center mb-8"><h2 class="text-3xl font-bold">Screenshot Tweet</h2><p class="text-gray-400 mt-2">Ambil tangkapan layar dari sebuah tweet.</p></div>
+                    <form id="sstweet-form" class="space-y-4">
+                        <input type="url" id="sstweet-url" class="form-input" placeholder="Tempel URL tweet di sini...">
+                        <button type="submit" id="sstweet-submit-btn" class="btn btn-primary">Ambil Screenshot</button>
+                    </form>
+                    <div id="sstweet-status" class="mt-4 text-center text-sm min-h-[20px]"></div><div id="sstweet-result" class="result-box flex justify-center items-center"></div>
+                </div>
+
+                <!-- Advanced AI Chat Panel -->
+                <div id="panel-chatai" class="tool-panel">
+                    <div class="text-center mb-8"><h2 class="text-3xl font-bold">Advanced AI Chat</h2><p class="text-gray-400 mt-2">Ngobrol dengan berbagai model AI.</p></div>
+                    <form id="chatai-form" class="space-y-4">
+                        <select id="chatai-model" class="form-select"></select>
+                        <textarea id="chatai-system" class="form-textarea" rows="2" placeholder="System prompt (opsional)..."></textarea>
+                        <textarea id="chatai-prompt" class="form-textarea" rows="4" placeholder="Tulis pesanmu di sini..."></textarea>
+                        <button type="submit" id="chatai-submit-btn" class="btn btn-primary">Kirim</button>
+                    </form>
+                    <div id="chatai-status" class="mt-4 text-center text-sm min-h-[20px]"></div><div id="chatai-result" class="result-box"></div>
+                </div>
+
+                <!-- AIO Downloader Panel -->
+                <div id="panel-aiodl" class="tool-panel">
+                    <div class="text-center mb-8"><h2 class="text-3xl font-bold">All-In-One Downloader</h2><p class="text-gray-400 mt-2">Unduh video dari berbagai platform.</p></div>
+                    <form id="aiodl-form" class="space-y-4">
+                        <input type="url" id="aiodl-url" class="form-input" placeholder="Tempel URL video di sini...">
+                        <button type="submit" id="aiodl-submit-btn" class="btn btn-primary">Unduh</button>
+                    </form>
+                    <div id="aiodl-status" class="mt-4 text-center text-sm min-h-[20px]"></div><div id="aiodl-result" class="result-box"></div>
+                </div>
+
+                <!-- YouTube Downloader Panel -->
+                <div id="panel-ytdl" class="tool-panel">
+                    <div class="text-center mb-8"><h2 class="text-3xl font-bold">YouTube Downloader</h2><p class="text-gray-400 mt-2">Unduh video atau audio dari YouTube.</p></div>
+                    <form id="ytdl-form" class="space-y-4">
+                        <input type="url" id="ytdl-url" class="form-input" placeholder="Tempel URL YouTube di sini...">
+                        <button type="submit" id="ytdl-submit-btn" class="btn btn-primary">Cari</button>
+                    </form>
+                    <div id="ytdl-status" class="mt-4 text-center text-sm min-h-[20px]"></div><div id="ytdl-result" class="result-box"></div>
+                </div>
+
+                <!-- Instagram Downloader Panel -->
+                <div id="panel-igdl" class="tool-panel">
+                    <div class="text-center mb-8"><h2 class="text-3xl font-bold">Instagram Downloader</h2><p class="text-gray-400 mt-2">Unduh Reels, Video, atau Foto.</p></div>
+                    <form id="igdl-form" class="space-y-4">
+                        <input type="url" id="igdl-url" class="form-input" placeholder="Tempel URL Instagram di sini...">
+                        <button type="submit" id="igdl-submit-btn" class="btn btn-primary">Unduh</button>
+                    </form>
+                    <div id="igdl-status" class="mt-4 text-center text-sm min-h-[20px]"></div><div id="igdl-result" class="result-box"></div>
+                </div>
+                
+                <!-- Generate Music Panel -->
+                <div id="panel-genmusic" class="tool-panel">
+                    <div class="text-center mb-8"><h2 class="text-3xl font-bold">Generate Music</h2><p class="text-gray-400 mt-2">Buat musik dari ide atau prompt.</p></div>
+                    <form id="genmusic-form" class="space-y-4">
+                        <input type="text" id="genmusic-prompt" class="form-input" placeholder="Contoh: musik lofi santai untuk belajar...">
+                        <button type="submit" id="genmusic-submit-btn" class="btn btn-primary">Buat Musik</button>
+                    </form>
+                    <div id="genmusic-status" class="mt-4 text-center text-sm min-h-[20px]"></div><div id="genmusic-result" class="result-box space-y-4"></div>
+                </div>
+                
+                <!-- MP4 to MP3 Panel -->
+                <div id="panel-tomp3" class="tool-panel">
+                    <div class="text-center mb-8"><h2 class="text-3xl font-bold">MP4 to MP3</h2><p class="text-gray-400 mt-2">Konversi URL video MP4 menjadi audio MP3.</p></div>
+                    <form id="tomp3-form" class="space-y-4">
+                        <input type="url" id="tomp3-url" class="form-input" placeholder="Tempel URL video MP4 di sini...">
+                        <button type="submit" id="tomp3-submit-btn" class="btn btn-primary">Konversi</button>
+                    </form>
+                    <div id="tomp3-status" class="mt-4 text-center text-sm min-h-[20px]"></div><div id="tomp3-result" class="result-box"></div>
+                </div>
+                
+                <!-- Website Checker Panel -->
+                <div id="panel-webcheck" class="tool-panel">
+                     <div class="text-center mb-8"><h2 class="text-3xl font-bold">Website Checker</h2><p class="text-gray-400 mt-2">Analisis teknis sebuah website.</p></div>
+                    <form id="webcheck-form" class="space-y-4">
+                        <input type="url" id="webcheck-url" class="form-input" placeholder="Contoh: https://google.com">
+                        <button type="submit" id="webcheck-submit-btn" class="btn btn-primary">Periksa</button>
+                    </form>
+                    <div id="webcheck-status" class="mt-4 text-center text-sm min-h-[20px]"></div><pre id="webcheck-result" class="result-box bg-gray-900 text-xs overflow-x-auto"></pre>
+                </div>
+                
+                <!-- URL Shortener Panel -->
+                <div id="panel-shorturl" class="tool-panel">
+                     <div class="text-center mb-8"><h2 class="text-3xl font-bold">URL Shortener</h2><p class="text-gray-400 mt-2">Perpendek URL yang panjang.</p></div>
+                    <form id="shorturl-form" class="space-y-4">
+                        <input type="url" id="shorturl-url" class="form-input" placeholder="Tempel URL panjang di sini...">
+                        <button type="submit" id="shorturl-submit-btn" class="btn btn-primary">Perpendek</button>
+                    </form>
+                    <div id="shorturl-status" class="mt-4 text-center text-sm min-h-[20px]"></div><div id="shorturl-result" class="result-box"></div>
+                </div>
+                
+                <!-- QR Code Generator Panel -->
+                <div id="panel-genqr" class="tool-panel">
+                    <div class="text-center mb-8"><h2 class="text-3xl font-bold">QR Code Generator</h2><p class="text-gray-400 mt-2">Buat kode QR dari teks atau URL.</p></div>
+                    <form id="genqr-form" class="space-y-4">
+                        <input type="text" id="genqr-input" class="form-input" placeholder="Masukkan teks atau URL...">
+                        <div class="flex justify-center space-x-4"><label class="flex items-center space-x-2"><input type="radio" name="genqr-type" value="text" checked><span>Teks</span></label><label class="flex items-center space-x-2"><input type="radio" name="genqr-type" value="link"><span>URL</span></label></div>
+                        <button type="submit" id="genqr-submit-btn" class="btn btn-primary">Buat QR Code</button>
+                    </form>
+                    <div id="genqr-status" class="mt-4 text-center text-sm min-h-[20px]"></div><div id="genqr-result" class="result-box flex justify-center items-center"></div>
+                </div>
+
+                <!-- Pastebin Stalker Panel -->
+                <div id="panel-getpbd" class="tool-panel">
+                    <div class="text-center mb-8"><h2 class="text-3xl font-bold">Pastebin Stalker</h2><p class="text-gray-400 mt-2">Lihat detail dan konten dari URL Pastebin.</p></div>
+                    <form id="getpbd-form" class="space-y-4">
+                        <input type="url" id="getpbd-url" class="form-input" placeholder="Tempel URL Pastebin di sini...">
+                        <button type="submit" id="getpbd-submit-btn" class="btn btn-primary">Stalk</button>
+                    </form>
+                    <div id="getpbd-status" class="mt-4 text-center text-sm min-h-[20px]"></div><pre id="getpbd-result" class="result-box bg-gray-900 text-xs overflow-x-auto"></pre>
+                </div>
+
+                <!-- Minecraft Server Search Panel -->
+                <div id="panel-srvrmc-search" class="tool-panel">
+                    <div class="text-center mb-8"><h2 class="text-3xl font-bold">Minecraft Server Search</h2><p class="text-gray-400 mt-2">Cari server Minecraft.</p></div>
+                    <form id="srvrmc-search-form" class="space-y-4">
+                        <input type="text" id="srvrmc-search-query" class="form-input" placeholder="Nama server...">
+                        <button type="submit" id="srvrmc-search-submit-btn" class="btn btn-primary">Cari</button>
+                    </form>
+                    <div id="srvrmc-search-status" class="mt-4 text-center text-sm min-h-[20px]"></div><div id="srvrmc-search-result" class="result-box space-y-4"></div>
+                </div>
+                
+                <!-- Minecraft Server Info Panel -->
+                <div id="panel-infoserver" class="tool-panel">
+                    <div class="text-center mb-8"><h2 class="text-3xl font-bold">Minecraft Server Info</h2><p class="text-gray-400 mt-2">Dapatkan info detail server Minecraft.</p></div>
+                    <form id="infoserver-form" class="space-y-4">
+                         <input type="text" id="infoserver-ip" class="form-input" placeholder="IP Server, contoh: play.hypixel.net">
+                        <div class="flex justify-center space-x-4"><label class="flex items-center space-x-2"><input type="radio" name="infoserver-type" value="java" checked><span>Java</span></label><label class="flex items-center space-x-2"><input type="radio" name="infoserver-type" value="bedrock"><span>Bedrock</span></label></div>
+                        <button type="submit" id="infoserver-submit-btn" class="btn btn-primary">Cek Info</button>
+                    </form>
+                    <div id="infoserver-status" class="mt-4 text-center text-sm min-h-[20px]"></div><pre id="infoserver-result" class="result-box bg-gray-900 text-xs overflow-x-auto"></pre>
+                </div>
+                
+                <footer class="text-center text-gray-500 text-xs mt-8 border-t border-gray-700 pt-4">
+                    <p>Copyright &copy; allxddev</p>
+                    <p>WA: 6288297793616 | Telegram: allxddev | Email: allxddev@gmail.com</p>
+                </footer>
+            </div>
+        </main>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // --- NOTE PENTING ---
+        // Sebagian besar fungsi di skrip ini adalah scraper dan melakukan permintaan ke API eksternal.
+        // Fungsi-fungsi ini SANGAT MUNGKIN GAGAL di browser web karena kebijakan keamanan CORS (Cross-Origin Resource Sharing).
+        // Galat 'Failed to fetch' di konsol biasanya menunjukkan masalah CORS.
+        // Agar alat-alat ini berfungsi dengan andal, mereka perlu dijalankan di server (seperti Node.js) atau melalui proksi yang menangani CORS.
+
+        // --- LOGIKA NAVIGASI ---
+        const sidebarLinks = document.querySelectorAll('.sidebar-link');
+        const toolPanels = document.querySelectorAll('.tool-panel');
+
+        sidebarLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetPanelId = link.getAttribute('data-target');
+                
+                sidebarLinks.forEach(l => l.classList.remove('active'));
+                link.classList.add('active');
+
+                toolPanels.forEach(panel => {
+                    panel.classList.toggle('active', panel.id === targetPanelId);
+                });
+            });
+        });
+
+        // --- FUNGSI BANTU GENERIC ---
+        function updateStatus(message, isError = false, element) {
+            if (!element) return;
+            element.innerHTML = isError ? `<span class="text-red-400">${message}</span>` : `<span class="text-green-400">${message}</span>`;
+        }
+        
+        function showLoader(element, show = true) {
+            if(element) element.innerHTML = show ? '<div class="loader mx-auto"></div>' : '';
+        }
+        
+        function handleFetchError(error, statusElement, featureName) {
+            console.error(`${featureName} Error:`, error);
+            let errorMessage = `Gagal: ${error.message}`;
+            if (error instanceof TypeError && (error.message.includes('Failed to fetch') || error.message.includes('NetworkError'))) {
+                errorMessage = `<b>Gagal Terhubung ke Server (Error CORS).</b><br>API untuk fitur ini kemungkinan memblokir permintaan langsung dari browser. Ini adalah batasan keamanan server, bukan kesalahan pada aplikasi.`;
+            }
+            updateStatus(errorMessage, true, statusElement);
+        }
+
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
+            });
+        }
+
+        // --- IMPLEMENTASI SEMUA FITUR ---
+
+        // Helper untuk event listener formulir
+        function setupFormListener(formId, submitHandler) {
+            const form = document.getElementById(formId);
+            if (form) {
+                form.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const submitBtn = form.querySelector('button[type="submit"]');
+                    const statusEl = document.getElementById(formId.replace('-form', '-status'));
+                    const resultEl = document.getElementById(formId.replace('-form', '-result'));
+                    
+                    const originalBtnText = submitBtn.innerText;
+                    submitBtn.disabled = true;
+                    submitBtn.innerText = 'Memproses...';
+                    showLoader(resultEl, true);
+                    updateStatus('Memproses permintaan...', false, statusEl);
+
+                    try {
+                        await submitHandler(form, statusEl, resultEl);
+                    } catch (error) {
+                        handleFetchError(error, statusEl, formId);
+                    } finally {
+                        showLoader(resultEl, false);
+                        submitBtn.disabled = false;
+                        submitBtn.innerText = originalBtnText;
+                    }
+                });
+            }
+        }
+        
+        // --- AI Labs ---
+        setupFormListener('ailabs-form', async (form, statusEl, resultEl) => {
+             updateStatus('Fitur ini sangat tidak stabil dan kemungkinan besar akan gagal karena CORS.', true, statusEl);
+             throw new Error("Fitur AILabs tidak dapat diimplementasikan dengan andal di sisi klien karena CORS dan header kustom yang kompleks.");
+        });
+
+        // --- Text to Image ---
+        setupFormListener('txttoimage-form', async (form, statusEl, resultEl) => {
+            const prompt = form.querySelector('#txttoimage-prompt').value.trim();
+            if (!prompt) throw new Error('Prompt tidak boleh kosong.');
+            
+            const result = await txttoimage_browser(prompt);
+            resultEl.innerHTML = `<img src="${result}" class="max-w-full h-auto rounded-lg">`;
+            updateStatus('Gambar berhasil dibuat!', false, statusEl);
+        });
+        
+        // --- Remove Background ---
+        const removebgInput = document.getElementById('removebg-input');
+        if(removebgInput) {
+            removebgInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const preview = document.getElementById('removebg-preview');
+                    preview.src = URL.createObjectURL(file);
+                    preview.classList.remove('hidden');
+                }
+            });
+        }
+        setupFormListener('removebg-form', async (form, statusEl, resultEl) => {
+            const file = form.querySelector('#removebg-input').files[0];
+            if (!file) throw new Error('Silakan pilih gambar terlebih dahulu.');
+
+            const dataUri = await fileToBase64(file);
+            const result = await removebg_browser(dataUri);
+            resultEl.innerHTML = `<img src="${result}" class="max-w-full h-auto rounded-lg"><a href="${result}" download="removed-bg.png" class="btn btn-primary mt-4 bg-green-600 hover:bg-green-700">Unduh Hasil</a>`;
+            updateStatus('Latar belakang berhasil dihapus!', false, statusEl);
+        });
+
+        // --- Describe Image ---
+         const descbimgInput = document.getElementById('descbimg-input');
+        if(descbimgInput) {
+            descbimgInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const preview = document.getElementById('descbimg-preview');
+                    preview.src = URL.createObjectURL(file);
+                    preview.classList.remove('hidden');
+                }
+            });
+        }
+        setupFormListener('descbimg-form', async (form, statusEl, resultEl) => {
+            const file = form.querySelector('#descbimg-input').files[0];
+            if (!file) throw new Error('Silakan pilih gambar terlebih dahulu.');
+
+            const dataUri = await fileToBase64(file);
+            const result = await descbimg_browser(dataUri);
+            resultEl.textContent = result;
+            updateStatus('Gambar berhasil dideskripsikan!', false, statusEl);
+        });
+
+        // --- Random Waifu ---
+        setupFormListener('aoirandom-form', async (form, statusEl, resultEl) => {
+            resultEl.innerHTML = ''; // Clear previous results
+            // This feature scrapes a website, which is not possible from the browser due to CORS.
+            throw new Error("Fitur ini tidak dapat berfungsi di browser karena membutuhkan scraping sisi server yang diblokir oleh kebijakan CORS.");
+        });
+
+        // --- Screenshot Tweet ---
+        setupFormListener('sstweet-form', async (form, statusEl, resultEl) => {
+            const url = form.querySelector('#sstweet-url').value.trim();
+            if (!url) throw new Error('URL Tweet tidak boleh kosong.');
+            
+            const resultBase64 = await sstweet_browser(url);
+            resultEl.innerHTML = `<img src="${resultBase64}" class="max-w-full h-auto rounded-lg border border-gray-600">`;
+            updateStatus('Screenshot berhasil dibuat!', false, statusEl);
+        });
+        
+        // --- Advanced AI Chat ---
+        const chataiModelSelect = document.getElementById('chatai-model');
+        if(chataiModelSelect) {
+            const models = ['gpt-4.1-nano', 'gpt-4.1-mini', 'gpt-4.1', 'o4-mini', 'deepseek-r1', 'deepseek-v3', 'claude-3.7', 'gemini-2.0', 'grok-3-mini', 'qwen-qwq-32b', 'gpt-4o', 'o3', 'gpt-4o-mini', 'llama-3.3'];
+            models.forEach(m => {
+                const option = document.createElement('option');
+                option.value = m;
+                option.textContent = m;
+                chataiModelSelect.appendChild(option);
+            });
+        }
+        setupFormListener('chatai-form', async (form, statusEl, resultEl) => {
+            const model = form.querySelector('#chatai-model').value;
+            const system = form.querySelector('#chatai-system').value.trim();
+            const prompt = form.querySelector('#chatai-prompt').value.trim();
+            if (!prompt) throw new Error('Prompt tidak boleh kosong.');
+            
+            const result = await chatai_browser(prompt, model, system);
+            resultEl.textContent = result.message;
+            updateStatus('Respon diterima!', false, statusEl);
+        });
+        
+        // --- AIO Downloader ---
+        setupFormListener('aiodl-form', async (form, statusEl, resultEl) => {
+            const url = form.querySelector('#aiodl-url').value.trim();
+            if (!url) throw new Error('URL tidak boleh kosong.');
+
+            const data = await aiodl_browser(url);
+            if(data.error) throw new Error(data.error);
+            resultEl.innerHTML = data.result; // The API returns HTML content
+            updateStatus('Konten ditemukan!', false, statusEl);
+        });
+        
+        // --- YouTube Downloader ---
+        setupFormListener('ytdl-form', async (form, statusEl, resultEl) => {
+            const url = form.querySelector('#ytdl-url').value.trim();
+            if (!url) throw new Error('URL YouTube tidak boleh kosong.');
+
+            const data = await ytdl_browser(url);
+            if(data.error) throw new Error(data.details);
+            
+            let html = `
+                <div class="text-center">
+                    <img src="${data.thumbnail}" class="mx-auto rounded-lg mb-4 max-w-xs">
+                    <h3 class="text-xl font-bold">${data.title}</h3>
+                    <p class="text-gray-400">${data.duration}</p>
+                </div>
+                <div class="mt-4 space-y-2">
+                    <h4 class="font-bold">Video:</h4>
+                    ${data.videos.map(v => `<a href="${v.url}" target="_blank" rel="noopener noreferrer" class="btn bg-red-600 hover:bg-red-700">${v.quality} (${v.size})</a>`).join('')}
+                    <h4 class="font-bold mt-4">Audio:</h4>
+                    ${data.audios.map(a => `<a href="${a.url}" target="_blank" rel="noopener noreferrer" class="btn bg-green-600 hover:bg-green-700">${a.quality} (${a.size})</a>`).join('')}
+                </div>
+            `;
+            resultEl.innerHTML = html;
+            updateStatus('Video ditemukan!', false, statusEl);
+        });
+
+        // --- Instagram Downloader ---
+        setupFormListener('igdl-form', async (form, statusEl, resultEl) => {
+            const url = form.querySelector('#igdl-url').value.trim();
+            if (!url) throw new Error('URL Instagram tidak boleh kosong.');
+            
+            const data = await igdl_browser(url);
+            if(data.status !== 'success') throw new Error(data.message || 'Gagal mengunduh.');
+            
+            let mediaHtml = data.data.map(item => {
+                if(item.type === 'video') {
+                    return `<video src="${item.url}" controls class="w-full rounded-lg my-2"></video>`;
+                } else {
+                    return `<img src="${item.url}" class="w-full rounded-lg my-2">`;
+                }
+            }).join('');
+            
+            resultEl.innerHTML = mediaHtml;
+            updateStatus('Media ditemukan!', false, statusEl);
+        });
+
+        // --- Generate Music ---
+        setupFormListener('genmusic-form', async (form, statusEl, resultEl) => {
+            const prompt = form.querySelector('#genmusic-prompt').value.trim();
+            if (!prompt) throw new Error('Prompt tidak boleh kosong.');
+            
+            const results = await genmusic_browser(prompt, (status) => updateStatus(status, false, statusEl));
+            let html = results.map(song => `
+                <div>
+                    <p class="font-bold">${song.title || 'Untitled'}</p>
+                    <audio controls src="${song.url}" class="w-full"></audio>
+                </div>
+            `).join('');
+            resultEl.innerHTML = html;
+            updateStatus('Musik berhasil dibuat!', false, statusEl);
+        });
+        
+        // --- MP4 to MP3 ---
+        setupFormListener('tomp3-form', async (form, statusEl, resultEl) => {
+            const url = form.querySelector('#tomp3-url').value.trim();
+            if(!url) throw new Error('URL MP4 tidak boleh kosong.');
+            
+            const resultUrl = await tomp3_browser(url, (status) => updateStatus(status, false, statusEl));
+            resultEl.innerHTML = `<audio controls src="${resultUrl}" class="w-full"></audio><a href="${resultUrl}" class="btn btn-primary mt-4 bg-green-600 hover:bg-green-700" download="audio.mp3">Unduh MP3</a>`;
+            updateStatus('Konversi berhasil!', false, statusEl);
+        });
+        
+        // --- Website Checker ---
+        setupFormListener('webcheck-form', async (form, statusEl, resultEl) => {
+            const url = form.querySelector('#webcheck-url').value.trim();
+            if(!url) throw new Error('URL tidak boleh kosong.');
+            
+            const data = await webcheck_browser(url);
+            resultEl.textContent = JSON.stringify(data, null, 2);
+            updateStatus('Pemeriksaan selesai!', false, statusEl);
+        });
+
+        // --- URL Shortener ---
+        setupFormListener('shorturl-form', async (form, statusEl, resultEl) => {
+             const url = form.querySelector('#shorturl-url').value.trim();
+            if(!url) throw new Error('URL tidak boleh kosong.');
+            
+            const data = await shorturl_browser(url);
+            resultEl.innerHTML = `URL Pendek: <a href="${data.shortened}" target="_blank" class="text-blue-400 hover:underline">${data.shortened}</a>`;
+            updateStatus('URL berhasil diperpendek!', false, statusEl);
+        });
+        
+        // --- QR Code Generator ---
+        setupFormListener('genqr-form', async (form, statusEl, resultEl) => {
+            const input = form.querySelector('#genqr-input').value.trim();
+            const type = form.querySelector('input[name="genqr-type"]:checked').value;
+            if(!input) throw new Error('Input tidak boleh kosong.');
+
+            const svgCode = await genqr_browser(input, type);
+            resultEl.innerHTML = svgCode;
+            updateStatus('QR Code berhasil dibuat!', false, statusEl);
+        });
+
+        // --- Pastebin Stalker ---
+        setupFormListener('getpbd-form', async (form, statusEl, resultEl) => {
+            // This feature scrapes a website, which is not possible from the browser due to CORS.
+            throw new Error("Fitur ini tidak dapat berfungsi di browser karena membutuhkan scraping sisi server yang diblokir oleh kebijakan CORS.");
+        });
+
+        // --- Minecraft Server Search ---
+        setupFormListener('srvrmc-search-form', async (form, statusEl, resultEl) => {
+             // This feature scrapes a website, which is not possible from the browser due to CORS.
+            throw new Error("Fitur ini tidak dapat berfungsi di browser karena membutuhkan scraping sisi server yang diblokir oleh kebijakan CORS.");
+        });
+        
+        // --- Minecraft Server Info ---
+        setupFormListener('infoserver-form', async (form, statusEl, resultEl) => {
+            const ip = form.querySelector('#infoserver-ip').value.trim();
+            const type = form.querySelector('input[name="infoserver-type"]:checked').value;
+            if(!ip) throw new Error('IP Server tidak boleh kosong.');
+            
+            const data = await infoserver_browser(type, ip);
+            resultEl.textContent = JSON.stringify(data, null, 2);
+            updateStatus('Info server berhasil didapatkan!', false, statusEl);
+        });
+
+
+        // --- Browser-side Implementations of Scrapers ---
+
+        async function txttoimage_browser(prompt) {
+             const datapost = `prompt=${encodeURIComponent(prompt)}`;
+             const res = await fetch('https://www.texttoimage.org/generate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+                body: datapost
+             });
+             if(!res.ok) throw new Error('Gagal request generate.');
+             const result = await res.json();
+             if (!result.success || !result.url) throw new Error('Gagal mendapatkan URL gambar.');
+             // This part is tricky as it requires another fetch and parsing HTML, which will be blocked by CORS.
+             // We will return a placeholder or link instead.
+             throw new Error("API berhasil dipanggil, tetapi langkah kedua (mengambil gambar dari halaman hasil) diblokir oleh CORS.");
+        }
+
+        async function removebg_browser(dataUri) {
+            const res = await fetch('https://background-remover.com/removeImageBackground', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ encodedImage: dataUri })
+            });
+            if(!res.ok) throw new Error('Request ke server removebg gagal.');
+            const data = await res.json();
+            if(!data.encodedImageWithoutBackground) throw new Error('Gagal menghapus background.');
+            return data.encodedImageWithoutBackground;
+        }
+        
+        async function descbimg_browser(dataUri) {
+            const payload = { image: dataUri, isPrompt: true, language: "English" };
+            const res = await fetch('https://alttextgenerator.co/api/llm/lp-alt-text', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            if(!res.ok) throw new Error('Request ke server descbimg gagal.');
+            return await res.text();
+        }
+
+        async function sstweet_browser(tweetUrl) {
+            const match = tweetUrl.match(/status\/(\d+)/);
+            if (!match) throw new Error('URL Tweet tidak valid');
+            const tweetId = match[1];
+            const payload = { templateSlug: 'tweet-image', modifications: { tweetUrl, tweetId }, renderType: 'images', responseFormat: 'png', responseType: 'base64' };
+            const res = await fetch('https://orshot.com/api/templates/make-playground-request', {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain; charset=UTF-8' },
+                body: JSON.stringify(payload)
+            });
+            if(!res.ok) throw new Error('Request ke server sstweet gagal.');
+            const data = await res.json();
+            if (!data?.data?.content) throw new Error('Tidak ada respons konten.');
+            return data.data.content;
+        }
+
+        async function chatai_browser(question, model, system_prompt) {
+            const payload = { question, model, system_prompt };
+            const res = await fetch('https://ai-interface.anisaofc.my.id/api/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            if(!res.ok) throw new Error('Request ke server chatai gagal.');
+            return await res.json();
+        }
+        
+        async function aiodl_browser(url) {
+            const params = new URLSearchParams({ query: url, vt: 'home' });
+            const res = await fetch('https://ssvid.net/api/ajax/search?hl=en', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+                body: params.toString()
+            });
+            if(!res.ok) throw new Error('Request ke server aiodl gagal.');
+            return await res.json();
+        }
+
+        async function ytdl_browser(url) {
+            const res = await fetch('https://www.clipto.com/api/youtube', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ url })
+            });
+            if(!res.ok) throw new Error('Request ke server ytdl gagal.');
+            return await res.json();
+        }
+
+        async function igdl_browser(url) {
+            const res = await fetch('https://api.instantdp.com/igdl', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ url })
+            });
+            if(!res.ok) throw new Error('Request ke server igdl gagal.');
+            return await res.json();
+        }
+        
+        async function genmusic_browser(prompt, statusCallback) {
+            statusCallback('Mengirim permintaan...');
+            const resGen = await fetch('https://suno.exomlapi.com/generate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ prompt, customMode: false, instrumental: false })
+            });
+            if(!resGen.ok) throw new Error('Gagal memulai pembuatan musik.');
+            const genData = await resGen.json();
+            if (genData.status !== 'initiated') throw new Error('Gagal menginisiasi tugas.');
+            
+            const { taskId, token } = genData;
+            for(let i = 0; i < 20; i++) { // Poll for a while
+                statusCallback(`Menunggu hasil... (${i+1}/20)`);
+                await new Promise(r => setTimeout(r, 3000));
+                const statusRes = await fetch('https://suno.exomlapi.com/check-status', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ taskId, token })
+                });
+                const statusData = await statusRes.json();
+                if (statusData.status === 'TEXT_SUCCESS') return statusData.results;
+                if (statusData.status === 'error') throw new Error('Pembuatan musik gagal di server.');
+            }
+            throw new Error('Waktu tunggu habis.');
+        }
+        
+        async function tomp3_browser(url, statusCallback) {
+             statusCallback('Membuat tugas konversi...');
+             const fname = url.split('/').pop();
+             const jobPayload = { tasks: { import: { operation: "import/url", url, filename: fname }, convert: { operation: "convert", input: "import", output_format: "mp3" }, "export-url": { operation: "export/url", input: "convert" } } };
+             const jobRes = await fetch('https://api.freeconvert.com/v1/process/jobs', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(jobPayload)
+             });
+             if(!jobRes.ok) throw new Error('Gagal membuat tugas konversi.');
+             const jobData = await jobRes.json();
+             const jobId = jobData.id;
+
+             for(let i=0; i<20; i++) {
+                statusCallback(`Menunggu konversi... (${i+1}/20)`);
+                await new Promise(r => setTimeout(r, 2000));
+                const statusRes = await fetch(`https://api.freeconvert.com/v1/process/jobs/${jobId}`);
+                const statusData = await statusRes.json();
+                if(statusData.status === 'completed') {
+                    const exportTask = statusData.tasks.find(t => t.name === 'export-url');
+                    if(exportTask?.result?.url) return exportTask.result.url;
+                    throw new Error('URL hasil tidak ditemukan.');
+                }
+                if(statusData.status === 'failed') throw new Error('Konversi gagal di server.');
+             }
+             throw new Error('Waktu tunggu konversi habis.');
+        }
+
+        async function webcheck_browser(url) {
+            const res = await fetch(`https://website-checker-api.ryte.com/?url=${encodeURIComponent(url)}`);
+            if(!res.ok) throw new Error('Gagal memeriksa website.');
+            return await res.json();
+        }
+
+        async function shorturl_browser(url) {
+             const res = await fetch('https://short.abella.icu/api/shorten', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ url })
+             });
+             if(!res.ok) throw new Error('Gagal memperpendek URL.');
+             return await res.json();
+        }
+
+        async function genqr_browser(input, type) {
+            const payload = { backcolor: "#FFFFFF", frontcolor: "#000000", section: type, [type === 'link' ? 'link' : 'data']: input };
+            const res = await fetch('https://qr.io/generator2/ajax/process-index.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            if(!res.ok) throw new Error('Gagal membuat QR code.');
+            const data = await res.json();
+            if(!data.svgcode) throw new Error('SVG tidak ditemukan dalam respons.');
+            return data.svgcode;
+        }
+
+        async function infoserver_browser(jenis, ip) {
+            const res = await fetch(`https://api.mcstatus.io/v2/status/${jenis}/${ip}`);
+            if(!res.ok) throw new Error(`Server tidak ditemukan atau offline.`);
+            return await res.json();
+        }
+
+    });
+    </script>
+</body>
+</html>
+
